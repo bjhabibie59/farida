@@ -1,84 +1,87 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        <h2 class="h4 font-weight-bold text-dark mb-0">
             Dashboard Masyarakat
         </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="py-5"> <div class="container"> <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                <h3 class="text-lg font-semibold mb-2">
-                    Daftar Pengaduan dan Tanggapan
-                </h3>
-                <p class="text-sm text-gray-600 mb-4">
-                    Berikut semua laporan yang telah Anda buat beserta tanggapan dari petugas.
-                </p>
+                    <h3 class="h5 card-title mb-2 font-weight-bold">
+                        Daftar Pengaduan dan Tanggapan
+                    </h3>
+                    <p class="text-muted small mb-4">
+                        Berikut semua laporan yang telah Anda buat beserta tanggapan dari petugas.
+                    </p>
 
-                <div class="overflow-x-auto">
-                    <table class="min-w-full border border-gray-200 divide-y divide-gray-200">
-                        <thead class="bg-blue-100">
-                            <tr>
-                                <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">ID</th>
-                                <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Tanggal</th>
-                                <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Isi</th>
-                                <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Status</th>
-                                <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Tanggapan</th>
-                                <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            @forelse($pengaduan as $p)
-                                <tr>
-                                    <td class="px-4 py-2 text-sm">{{ $p->id }}</td>
-                                    <td class="px-4 py-2 text-sm">{{ $p->tgl_pengaduan }}</td>
-                                    <td class="px-4 py-2 text-sm">{{ $p->isi }}</td>
-                                    <td class="px-4 py-2 text-sm">
-                                        {{ $p->status ?? 'Belum Ditanggapi' }}
-                                    </td>
-                                    <td class="px-4 py-2 text-sm">
-                                        @if($p->tanggapan->count() > 0)
-                                            <ul class="list-disc pl-4">
-                                                @foreach($p->tanggapan as $t)
-                                                    <li>
-                                                        {{ $t->tanggapan }}
-                                                        <span class="text-xs text-gray-500">
-                                                            (oleh: {{ $t->petugas->name ?? 'Petugas' }},
-                                                            {{ $t->tgl_tanggapan }})
-                                                        </span>
-                                                    </li>
-                                                @endforeach
-                                            </ul>
-                                        @else
-                                            <span class="text-gray-500">
-                                                Belum ada tanggapan
-                                            </span>
-                                        @endif
-                                    </td>
-                                    <td class="px-4 py-2 text-sm">
-                                        <a href="{{ route('pengaduan.show', $p->id) }}"
-                                           class="inline-block bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-1 rounded">
-                                            Detail
-                                        </a>
-                                    </td>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover align-middle">
+                            <thead class="table-primary"> <tr>
+                                    <th>ID</th>
+                                    <th>Tanggal</th>
+                                    <th>Isi</th>
+                                    <th>Status</th>
+                                    <th>Tanggapan</th>
+                                    <th>Aksi</th>
                                 </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="6" class="px-4 py-3 text-center text-gray-500">
-                                        Belum ada laporan
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
+                            </thead>
+                            <tbody>
+                                @forelse($pengaduan as $p)
+                                    <tr>
+                                        <td>{{ $p->id }}</td>
+                                        <td>{{ $p->tgl_pengaduan }}</td>
+                                        <td>{{ $p->isi }}</td>
+                                        <td>
+                                            @if($p->status == '0')
+                                                <span class="badge bg-secondary">Belum Ditanggapi</span>
+                                            @elseif($p->status == 'proses')
+                                                <span class="badge bg-warning text-dark">Proses</span>
+                                            @else
+                                                <span class="badge bg-success">{{ $p->status }}</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if($p->tanggapan && $p->tanggapan->count() > 0)
+                                                <ul class="list-unstyled mb-0">
+                                                    @foreach($p->tanggapan as $t)
+                                                        <li class="mb-2">
+                                                            <i class="bi bi-chat-right-text-fill text-info"></i>
+                                                            {{ $t->tanggapan }}
+                                                            <div class="text-muted" style="font-size: 0.75rem;">
+                                                                (oleh: {{ optional($t->petugas)->name ?? 'Petugas' }}, {{ $t->tgl_tanggapan }})
+                                                            </div>
+                                                        </li>
+                                                    @endforeach
+                                                </ul>
+                                            @else
+                                                <span class="text-muted small">Belum ada tanggapan</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            <a href="{{ route('pengaduan.show', $p->id) }}"
+                                               class="btn btn-sm btn-primary">
+                                                Detail
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted py-4">
+                                            Belum ada laporan
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
 
-                <div class="mt-6">
-                    <a href="{{ route('pengaduan.create') }}"
-                       class="inline-block bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">
-                        Buat Laporan Baru
-                    </a>
+                    <div class="mt-4">
+                        <a href="{{ route('pengaduan.create') }}" class="btn btn-success">
+                            Buat Laporan Baru
+                        </a>
+                    </div>
+
                 </div>
             </div>
 

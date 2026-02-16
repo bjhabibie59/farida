@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 
 class Tanggapan extends Model
@@ -11,8 +12,18 @@ class Tanggapan extends Model
     protected $fillable = [
         'id_pengaduan',
         'tanggapan',
-        'tanggal_tanggapan'
+        'tgl_tanggapan',
+        'id_user',
     ];
 
-    public $timestamps = false;
+    /**
+     * Mendefinisikan relasi ke User yang memberikan tanggapan.
+     * Di view, ini akan diakses sebagai 'petugas'.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function petugas()
+    {
+        return $this->belongsTo(User::class, 'id_user');
+    }
 }

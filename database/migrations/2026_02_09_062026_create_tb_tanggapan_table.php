@@ -12,8 +12,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('id_pengaduan')->references('id')->on('pengaduan');
             $table->foreignId('id_user')->references('id')->on('users');
-            $table->date('tanggal_tanggapan');
-            $table->timestamps(); 
+            $table->text('tanggapan');
+            $table->date('tgl_tanggapan');
+            $table->timestamps();
         });
     }
 

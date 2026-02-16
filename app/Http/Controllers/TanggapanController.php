@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Tanggapan;
-use App\Models\Pengaduan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
