@@ -1,41 +1,62 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Buat Tanggapan</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-<div class="container mt-5">
-    <h1 class="mb-4">Buat Tanggapan</h1>
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="h4 font-weight-bold text-dark mb-0">
+            Berikan Tanggapan
+        </h2>
+    </x-slot>
 
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
+    <div class="container py-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+
+                <div class="card shadow-sm border-0 mb-4 bg-light">
+                    <div class="card-body">
+                        <h6 class="fw-bold text-muted text-uppercase small">Menanggapi Laporan #{{ $pengaduan->id }}</h6>
+                        <p class="mb-1 fw-bold">{{ $pengaduan->user->name }} ({{ $pengaduan->tgl_pengaduan }})</p>
+                        <p class="fst-italic text-secondary mb-0">"{{ Str::limit($pengaduan->isi, 150) }}"</p>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-4">
+                        <form action="{{ route('tanggapan.store') }}" method="POST">
+                            @csrf
+
+                            <input type="hidden" name="id_pengaduan" value="{{ $pengaduan->id }}">
+
+                            <div class="mb-3">
+                                <label for="status" class="form-label fw-bold">Update Status Laporan</label>
+                                {{-- <select name="status" id="status" class="form-select">
+                                    <option value="0" {{ $pengaduan->status == '0' ? 'selected' : '' }}>Pending (Belum Proses)</option>
+                                    <option value="proses" {{ $pengaduan->status == 'menunggu' ? 'selected' : '' }}>Sedang Diproses</option>
+                                    <option value="selesai" {{ $pengaduan->status == 'selesai' ? 'selected' : '' }}>Selesai</option>
+                                </select> --}}
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="tanggapan" class="form-label fw-bold">Isi Tanggapan</label>
+                                <textarea name="tanggapan"
+                                          id="tanggapan"
+                                          rows="5"
+                                          class="form-control"
+                                          placeholder="Tuliskan tanggapan atau tindakan yang telah dilakukan..."
+                                          required></textarea>
+                            </div>
+
+                            <div class="d-flex justify-content-between">
+                                <a href="{{ route('petugas.dashboard') }}" class="btn btn-secondary">
+                                    Batal
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-send-fill me-1"></i> Kirim Tanggapan
+                                </button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+
+            </div>
         </div>
-    @endif
-
-    <form action="{{ route('tanggapan.store') }}" method="POST">
-        @csrf
-
-        <div class="mb-3">
-            <label for="pengaduan_id" class="form-label">Pengaduan</label>
-            <input type="text" class="form-control" id="pengaduan_id" name="pengaduan_id"
-                   value="{{ $pengaduan_id ?? old('pengaduan_id') }}" readonly>
-        </div>
-
-        <div class="mb-3">
-            <label for="tanggapan" class="form-label">Tanggapan</label>
-            <textarea class="form-control" id="tanggapan" name="tanggapan" rows="5" required>{{ old('tanggapan') }}</textarea>
-        </div>
-
-        <button type="submit" class="btn btn-success">Kirim Tanggapan</button>
-        <a href="{{ route('tanggapan.index') }}" class="btn btn-secondary">Kembali</a>
-    </form>
-</div>
-</body>
-</html>
+    </div>
+</x-app-layout>

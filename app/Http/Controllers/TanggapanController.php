@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Pengaduan;
 use App\Models\Tanggapan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -11,43 +12,49 @@ class TanggapanController extends Controller
     // Menampilkan semua tanggapan (untuk petugas dan masyarakat)
     public function index()
     {
-        if (Auth::user()->role == 'petugas' || Auth::user()->role == 'admin') {
-            // Petugas/ admin lihat semua tanggapan
-            $tanggapans = Tanggapan::with('pengaduan', 'petugas')->get();
-        } else {
-            // Masyarakat lihat tanggapan miliknya
-            $tanggapans = Tanggapan::with('pengaduan', 'petugas')
-                ->whereHas('pengaduan', function ($query) {
-                    $query->where('user_id', Auth::id());
-                })->get();
-        }
+        // 1. Ambil semua data pengaduan (urutkan terbaru)
+        // 'user' adalah relasi ke tabel users (pelapor)
+        $pengaduan = Pengaduan::with('user')->orderBy('created_at', 'desc')->get();
 
-        return view('tanggapan.index', compact('tanggapans'));
+        // 2. Hitung statistik untuk kartu dashboard
+        $pending = Pengaduan::where('status', '0')->count();
+        $proses = Pengaduan::where('status', 'proses')->count();
+        $selesai = Pengaduan::where('status', 'selesai')->count();
+
+        // 3. Tampilkan view yang baru kita buat
+        return view('tanggapan.index', compact('pengaduan', 'pending', 'proses', 'selesai'));
     }
 
     // Menampilkan form create tanggapan (untuk petugas)
-    public function create(Request $request)
+    public function create(Request $request, $id)
     {
-        $pengaduan_id = $request->pengaduan_id ?? null;
+        $pengaduan = Pengaduan::with('user')->findOrFail($id);
+
         return view('tanggapan.create', compact('pengaduan'));
     }
 
     // Simpan tanggapan baru
     public function store(Request $request)
     {
+        // Validasi input
         $request->validate([
-            'pengaduan_id' => 'required|exists:pengaduan,id',
+            'id_pengaduan' => 'required|exists:pengaduan,id',
             'tanggapan' => 'required|string',
         ]);
 
+        // 1. Update Status di tabel Pengaduan
+        $pengaduan = Pengaduan::findOrFail($request->id_pengaduan);
+
+        // 2. Simpan data ke tabel Tanggapan
         Tanggapan::create([
-            'pengaduan_id' => $request->pengaduan_id,
-            'petugas_id' => Auth::id(), // otomatis petugas yang login
+            'id_pengaduan' => $request->id_pengaduan,
             'tgl_tanggapan' => now(),
             'tanggapan' => $request->tanggapan,
+            'id_user' => Auth::user()->id,
         ]);
 
-        return redirect()->route('tanggapan.index')->with('success', 'Tanggapan berhasil dibuat!');
+        return redirect()->route('petugas.dashboard')
+            ->with('success', 'Tanggapan berhasil dikirim!');
     }
 
     // Menampilkan detail tanggapan

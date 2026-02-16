@@ -28,10 +28,10 @@ class DashboardController extends Controller
     }
     public function masyarakat()
     {
-        $pengaduan = Pengaduan::where('id_user', Auth::id())
-            ->with('tanggapan.petugas')
-            ->get();
+        // $pengaduan = Pengaduan::where('id_user', Auth::id())
+        //     ->with('tanggapan.petugas')
+        //     ->get();
 
-        return view('masyarakat.dashboard', compact('pengaduan'));
+        return view('masyarakat.dashboard');
     }
 }

@@ -40,4 +40,9 @@ class PengaduanController extends Controller
         return redirect()->route('pengaduan.index')
             ->with('success', 'Pengaduan berhasil dikirim');
     }
+
+    public function show(Pengaduan $pengaduan)
+    {
+        return view('masyarakat.show', compact('pengaduan'));
+    }
 }

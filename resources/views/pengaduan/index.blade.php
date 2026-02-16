@@ -41,7 +41,7 @@
                 <td>
                     {{-- masyarakat hanya lihat --}}
                     @if(auth()->user()->role == 'masyarakat')
-                        <a href="{{ route('pengaduan.show', $p->id) }}" 
+                        <a href="{{ route('pengaduan.show', $p->id) }}"
                            class="btn btn-info btn-sm">
                             Detail
                         </a>
@@ -49,7 +49,7 @@
 
                     {{-- petugas bisa tanggapi --}}
                     @if(auth()->user()->role == 'petugas')
-                        <a href="{{ route('tanggapan.create', $p->id) }}" 
+                        <a href="{{ route('tanggapan.create', $p->id) }}"
                            class="btn btn-success btn-sm">
                             Tanggapi
                         </a>
@@ -57,8 +57,8 @@
 
                     {{-- admin bisa hapus --}}
                     @if(auth()->user()->role == 'admin')
-                        <form action="{{ route('pengaduan.destroy', $p->id) }}" 
-                              method="POST" 
+                        <form action="{{ route('pengaduan.destroy', $p->id) }}"
+                              method="POST"
                               style="display:inline;">
                             @csrf
                             @method('DELETE')
